@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Pattern generator</title>
+	<script type="text/javascript">
+		var rule = 184;
+		let canvas, context, currstate, nextstate, timer, currrow;
+		
+		function init() {
+			canvas = document.getElementById("canvas");
+			context = canvas.getContext('2d');
+		}
+		
+		function draw_row() {
+            currrow++;
+            if (currrow === canvas.height) {
+                timer = null;
+                return;
+            }
+			for (var i = 0; i < canvas.width; i++) {
+				if (currstate[i])
+					context.fillStyle = "rgb(0, 0, 0, 1)";
+				else context.fillStyle = "rgb(255, 255, 255, 0)";
+				context.fillRect(i, currrow, 1, 1);
+				var l, c, r;
+				if (i == 0) {
+					l = false; c = currstate[0]; r = currstate[1];
+				} else if (i == canvas.width - 1) {
+					l = currstate[i-1]; c = currstate[i]; r = false;
+				} else {
+					l = currstate[i-1]; c = currstate[i]; r = currstate[i+1];
+				}
+				var n = 0;
+				if (l == true) n |= 4;
+				if (c == true) n |= 2;
+				if (r == true) n |= 1;
+				nextstate[i] = (rule & Math.pow(2, n)) > 0;
+			}
+			for (var i = 0; i < canvas.width; i++) {
+                currstate[i] = nextstate[i];
+            }
+			draw_row();
+		}
+		
+		function start(){
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			currstate = new Array(canvas.width);
+			nextstate = new Array(canvas.width);
+			for (var i = 0; i < canvas.width; i++) {
+                if (Math.floor(Math.random() * 2)) currstate[i] = true;
+                else currstate[i] = false;
+			}
+			currrow = -1;
+            draw_row();
+		}
+		
+	</script>
+</head>
+
+<body onload="init()">
+	<canvas id="canvas" width="1000" height="300"></canvas>
+	<input type="button" id="start" value="Start" onclick="start()">
+</body>
+</html>
