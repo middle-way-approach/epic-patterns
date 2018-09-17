@@ -5,7 +5,7 @@
 	<title>Pattern generator</title>
 	<script type="text/javascript">
 		var rule = 184;
-		let canvas, context, currstate, nextstate, timer, currrow;
+		let canvas, context, currstate, nextstate, timer, currrow, inputWidth, inputHeight;
 		
 		function init() {
 			canvas = document.getElementById("canvas");
@@ -54,12 +54,32 @@
 			currrow = -1;
             draw_row();
 		}
+
+		function check() {
+			inputWidth = document.getElementById("widthField").value;
+			inputHeight = document.getElementById("heightField").value;
+			if (isNaN(inputWidth) || inputWidth < 1 || inputWidth > 10000) {
+				alert("The width must be a number between 1 and 10000");
+			}
+			else if (isNaN(inputHeight) || inputHeight < 1 || inputHeight > 10000) {
+				alert("The height must be a number between 1 and 10000");
+			}
+			else {
+				canvas.width = Math.round(inputWidth);
+				canvas.height = Math.round(inputHeight);
+				start();
+			}
+		}
 		
 	</script>
 </head>
 
 <body onload="init()">
-	<canvas id="canvas" width="1000" height="300"></canvas>
-	<input type="button" id="start" value="Start" onclick="start()">
+	<canvas id="canvas" width="480" height="320"></canvas>
+	<input type="button" id="start" value="Start" onclick="check()">
+	<label for="widthField">Width:</label>
+	<input type="text" id="widthField" name="size">
+	<label for="heightField">Height:</label>
+	<input type="text" id="heightField" name="size">
 </body>
 </html>
