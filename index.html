@@ -4,82 +4,96 @@
 	<meta charset="UTF-8">
 	<title>Pattern generator</title>
 	<script type="text/javascript">
-		var rule = 184;
-		let canvas, context, currstate, nextstate, timer, currrow, inputWidth, inputHeight;
-		
+		let canvas, context, currentState, nextState, timer, currentRow, rule = 184;
+
 		function init() {
 			canvas = document.getElementById("canvas");
 			context = canvas.getContext('2d');
 		}
-		
+
 		function draw_row() {
-            currrow++;
-            if (currrow === canvas.height) {
+            currentRow++;
+            if (currentRow === canvas.height) {
                 timer = null;
                 return;
             }
-			for (var i = 0; i < canvas.width; i++) {
-				if (currstate[i])
+			for (let i = 0; i < canvas.width; i++) {
+				if (currentState[i])
 					context.fillStyle = "rgb(0, 0, 0, 1)";
 				else context.fillStyle = "rgb(255, 255, 255, 0)";
-				context.fillRect(i, currrow, 1, 1);
+				context.fillRect(i, currentRow, 1, 1);
 				var l, c, r;
-				if (i == 0) {
-					l = false; c = currstate[0]; r = currstate[1];
-				} else if (i == canvas.width - 1) {
-					l = currstate[i-1]; c = currstate[i]; r = false;
+				if (i === 0) {
+					l = false; c = currentState[0]; r = currentState[1];
+				} else if (i === canvas.width - 1) {
+					l = currentState[i-1]; c = currentState[i]; r = false;
 				} else {
-					l = currstate[i-1]; c = currstate[i]; r = currstate[i+1];
+					l = currentState[i-1]; c = currentState[i]; r = currentState[i+1];
 				}
-				var n = 0;
-				if (l == true) n |= 4;
-				if (c == true) n |= 2;
-				if (r == true) n |= 1;
-				nextstate[i] = (rule & Math.pow(2, n)) > 0;
+				let n = 0;
+				if (l === true) n |= 4;
+				if (c === true) n |= 2;
+				if (r === true) n |= 1;
+				nextState[i] = (rule & Math.pow(2, n)) > 0;
 			}
-			for (var i = 0; i < canvas.width; i++) {
-                currstate[i] = nextstate[i];
+			for (let i = 0; i < canvas.width; i++) {
+                currentState[i] = nextState[i];
             }
 			draw_row();
 		}
-		
+
 		function start(){
 			context.clearRect(0, 0, canvas.width, canvas.height);
-			currstate = new Array(canvas.width);
-			nextstate = new Array(canvas.width);
+			currentState = new Array(canvas.width);
+			nextState = new Array(canvas.width);
 			for (var i = 0; i < canvas.width; i++) {
-                if (Math.floor(Math.random() * 2)) currstate[i] = true;
-                else currstate[i] = false;
+                if (Math.floor(Math.random() * 2)) currentState[i] = true;
+                else currentState[i] = false;
 			}
-			currrow = -1;
+			currentRow = -1;
             draw_row();
 		}
 
 		function check() {
-			inputWidth = document.getElementById("widthField").value;
-			inputHeight = document.getElementById("heightField").value;
-			if (isNaN(inputWidth) || inputWidth < 1 || inputWidth > 10000) {
-				alert("The width must be a number between 1 and 10000");
+			let inputWidth = document.getElementById("widthField").value;
+			let inputHeight = document.getElementById("heightField").value;
+          	rule = parseInt(document.getElementById("ruleField").value, 10);
+			if (isNaN(inputWidth) || inputWidth < 1 || inputWidth > 9999) {
+				alert("The width must be a number between 1 and 9999");
 			}
-			else if (isNaN(inputHeight) || inputHeight < 1 || inputHeight > 10000) {
-				alert("The height must be a number between 1 and 10000");
+			else if (isNaN(inputHeight) || inputHeight < 1 || inputHeight > 9999) {
+				alert("The height must be a number between 1 and 9999");
 			}
+            else if (isNaN(rule) || rule< 1 || rule > 255) {
+              alert("The rule must be a number between 1 and 255");
+            }
 			else {
 				canvas.width = Math.round(inputWidth);
 				canvas.height = Math.round(inputHeight);
 				start();
 			}
 		}
-		
 	</script>
 </head>
 
 <body onload="init()">
 	<canvas id="canvas" width="480" height="320"></canvas>
-	<input type="button" id="start" value="Start" onclick="check()">
-	<label for="widthField">Width:</label>
-	<input type="text" id="widthField" name="size">
-	<label for="heightField">Height:</label>
-	<input type="text" id="heightField" name="size">
+	<div>
+		<div>
+			<label for="widthField">width</label>
+			<input required type="text" id="widthField" maxlength="4" minlength="1" value="320">
+		</div>
+		<div>
+			<label for="heightField">height</label>
+			<input type="text" id="heightField" maxlength="4" minlength="1" value="320">
+		</div>
+		<div>
+			<label for="ruleField">algorithm</label>
+			<input type="text" id="ruleField" maxlength="3" minlength="3" value="184">
+		</div>
+		<div>
+			<input type="button" id="start" value="Start" onclick="check()">
+		</div>
+	</div>
 </body>
 </html>
